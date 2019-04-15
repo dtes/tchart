@@ -1,0 +1,63 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Telegram Chart Contest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="chart.css" rel="stylesheet" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+</head>
+
+<body class="theme-dark">
+  <main>
+    <h3>Telegram Chart Contest</h3>
+    <p>These charts are made with SVG. Paths are created only once, all transformations and animations are handled by
+      browser.</p>
+
+    <h5>Chart 1</h5>
+    <div id="chart-0"></div>
+    <p>Almost everything here is a DOM element (except for chart lines). For CSS classes I use my own naming scheme —
+      it's like BEM, but less verbose.</p>
+
+    <h5>Chart 2</h5>
+    <div id="chart-1"></div>
+    <p>As much as possible is specified via CSS. This makes appearance easily configurable and adaptive.</p>
+
+    <h5>Chart 3</h5>
+    <div id="chart-2"></div>
+    <p>For example, the height of the chart area is specified both in absolute units, and relative to the screen height
+      (50% max).</p>
+
+    <h5>Chart 4</h5>
+    <div id="chart-3"></div>
+    <p>Both touch and mouse events are supported. There are invisible paddings around thin draggable bars to help
+      catching them with finger.</p>
+
+    <h5>Chart 5</h5>
+    <div id="chart-4"></div>
+    <p id="user-agent"></p>
+
+    <a id="toggle-dark" onclick="toggleNightMode()">Switch to Night Mode</a>
+  </main>
+
+  <script src="chart.js"></script>
+  <script src="chart_data.js"></script>
+  <script>
+    document.getElementById('user-agent').innerText = 'User agent: ' + navigator.userAgent;
+    for (var i = 0; i < 5; i++) {
+      new TChart('chart-' + i, chart[i]);
+    }
+
+    function toggleNightMode() {
+      document.body.classList.toggle('theme-day');
+      document.body.classList.toggle('theme-dark');
+      if (document.body.classList.contains('theme-day')) {
+        document.getElementById('toggle-dark').innerText = 'Switch to Dark Mode';
+      } else {
+        document.getElementById('toggle-dark').innerText = 'Switch to Day Mode';
+      }
+    }
+  </script>
+</body>
+
+</html>
