@@ -1,6 +1,3 @@
-// Copyright 2019 Denis Olshin
-
-// Detecting browsers
 var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
 var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window.safari || (typeof safari !== 'undefined' && safari.pushNotification)) || navigator.userAgent.indexOf('Safari') != -1;
 var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
@@ -40,25 +37,55 @@ function createLinePath(svg, xs, series, width) {
   return line;
 }
 
-function createBar(svg, xs, series, prevSeries) {
-  var width = (xs[1] - xs[0]) / 1e7;
-  var barGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-  barGroup.setAttribute('vector-effect', 'non-scaling-stroke');
-  svg.appendChild(barGroup);
+// function createBar(svg, xs, series, prevSeries) {
+//   var width = (xs[1] - xs[0]) / 1e7;
+//   var barGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+//   barGroup.setAttribute('vector-effect', 'non-scaling-stroke');
+//   svg.appendChild(barGroup);
 
-  for (let i = 0; i < series.pts.length; i++) {
-    var bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    bar.setAttribute('vector-effect', 'non-scaling-stroke');
-    bar.setAttribute("x", ((xs[i] - xs[0]) / 1e7));
-    bar.setAttribute("y", prevSeries ? prevSeries.pts[i] : 0);
-    bar.setAttribute("height", prevSeries ? series.pts[i] - prevSeries.pts[i] : series.pts[i]);
-    // bar.setAttribute("y", 0);
-    // bar.setAttribute("height", series.pts[i]);
-    bar.setAttribute("width", width);
-    bar.setAttribute("fill", series.color);
-    barGroup.appendChild(bar);
+//   for (let i = 0; i < series.pts.length; i++) {
+//     var bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+//     bar.setAttribute('vector-effect', 'non-scaling-stroke');
+//     bar.setAttribute("x", ((xs[i] - xs[0]) / 1e7));
+//     bar.setAttribute("y", prevSeries ? prevSeries.pts[i] : 0);
+//     bar.setAttribute("height", prevSeries ? series.pts[i] - prevSeries.pts[i] : series.pts[i]);
+//     // bar.setAttribute("y", 0);
+//     // bar.setAttribute("height", series.pts[i]);
+//     bar.setAttribute("width", width);
+//     bar.setAttribute("fill", series.color);
+//     barGroup.appendChild(bar);
+//   }
+//   return barGroup;
+// }
+
+function createBar(svg, xs, series, prevSeries) {
+  var area, i, d = [], width = (xs[1] - xs[0]) / 1e7;;
+  area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  // area.setAttribute('stroke', series.color);
+  area.setAttribute('stroke-width', 0);
+  area.setAttribute('fill', series.color);
+  area.setAttribute('vector-effect', 'non-scaling-stroke');
+  area.setAttribute('stroke-linejoin', 'round');
+
+  for (i = series.pts.length - 1; i >= 0; i--) {
+    d.push(i == series.pts.length-1 ? 'M' : 'L');
+    d.push(((xs[i] - xs[0]) / 1e7 + width) + ',' + (prevSeries ? prevSeries.pts[i] : 0));
+    d.push('L');
+    d.push(((xs[i] - xs[0]) / 1e7) + ',' + (prevSeries ? prevSeries.pts[i] : 0));
   }
-  return barGroup;
+
+  for (i = 0; i < series.pts.length; i++) {
+    // d.push(i == 0 ? 'M' : 'L');
+    d.push('L');
+    d.push(((xs[i] - xs[0]) / 1e7) + ',' + series.pts[i]);
+    d.push('L');
+    d.push(((xs[i] - xs[0]) / 1e7 + width) + ',' + series.pts[i]);
+  }
+  d.push('z');
+  area.setAttribute('d', d.join(' '));
+
+  svg.appendChild(area);
+  return area;
 }
 
 function createArea(svg, xs, series, prevSeries) {
@@ -79,7 +106,7 @@ function createArea(svg, xs, series, prevSeries) {
     d.push('L');
     d.push((xs[i] - xs[0]) / 1e7 + ',' + series.pts[i]);
   }
-  // d.push('z');
+  d.push('z');
   area.setAttribute('d', d.join(' '));
 
   svg.appendChild(area);
